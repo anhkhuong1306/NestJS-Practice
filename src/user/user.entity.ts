@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, JoinTable, ManyToMany, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, UpdateDateColumn, OneToMany } from "typeorm";
 import { IsEmail } from "class-validator";
 import * as argon2 from 'argon2';
+import { DeviceSessionEntity } from "src/device/device.entity";
 
 @Entity('users')
 export class UserEntity {
@@ -22,6 +23,15 @@ export class UserEntity {
 
     @Column()
     password: string;
+
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
+
+    @OneToMany(() => DeviceSessionEntity, (deviceSession) => deviceSession.id)
+    deviceSessions: DeviceSessionEntity[];
 
     @BeforeInsert()
     async hashPassword() {
