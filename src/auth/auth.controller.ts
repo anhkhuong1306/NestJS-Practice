@@ -1,11 +1,16 @@
-import { Req, Headers, Body, Controller, Post, UsePipes, ValidationPipe, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Req, Headers, Body, Controller, Post, UsePipes, ValidationPipe, UseGuards, UseInterceptors, UseFilters } from '@nestjs/common';
 import { LoginUserDTO, LogoutUserDTO } from 'src/user/dto';
 import { AuthService } from './auth.service';
 import { LoginMetaData, LogoutRO } from 'src/device/device.interface';
 import { AuthGuard } from './guard/auth.guard';
-import { ApiName } from 'src/decorators/api-name.decorator';
-import { LoggingInterceptor } from 'src/interceptors/logging.interceptor';
+import { ApiName } from 'src/common/decorators/api-name.decorator';
+import { LoggingInterceptor } from 'src/common/interceptors/logging.interceptor';
+import { AllExceptionsFilter } from 'src/common/exception/all-exceptions.filter';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { RefreshTokenDTO } from './dto';
 
+@ApiTags('real-world')
+@UseFilters(AllExceptionsFilter)
 @UseInterceptors(LoggingInterceptor)
 @Controller('auth')
 export class AuthController {
@@ -22,7 +27,7 @@ export class AuthController {
         const metaData: LoginMetaData = { ipAddress, ua, deviceId };
         return await this.authService.signIn(signInDto, metaData);
     }
-
+    @ApiBearerAuth()
     @ApiName('Logout')
     @UseGuards(AuthGuard)
     @UsePipes(new ValidationPipe())
@@ -32,10 +37,11 @@ export class AuthController {
         return await this.authService.signOut(id, deviceId);
     }
 
+    @ApiBearerAuth()
     @ApiName('Refresh Token')
     @Post('refresh-token')
-    async refreshToken(@Req() req, @Body('refreshToken') refreshToken: string) {
+    async refreshToken(@Req() req, @Body() body: RefreshTokenDTO) {
         const deviceId = req.fingerprint.hash;
-        return await this.authService.refreshToken(deviceId, refreshToken);
+        return await this.authService.refreshToken(deviceId, body.refreshToken);
     }
 }

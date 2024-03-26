@@ -6,11 +6,13 @@ import { UserController } from "./user.controller";
 import { AuthModule } from "src/auth/auth.module";
 import { APP_GUARD } from "@nestjs/core";
 import { AuthGuard } from "src/auth/guard/auth.guard";
+import { LoggerModule } from "src/logger/logger.module";
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([UserEntity]), 
-        forwardRef(() => AuthModule)
+        forwardRef(() => AuthModule),
+        LoggerModule,
     ],
     providers: [
         UserService,

@@ -11,7 +11,7 @@ import { UpdateDeviceSessionDTO } from 'src/device/dto';
 import { Cache } from 'cache-manager';
 import * as randomatic from 'randomatic';
 import * as argon2 from 'argon2';
-import addDay from 'src/helpers/addDay';
+import addDay from 'src/common/helpers/addDay';
 import { PayLoad } from './auth.interface';
 
 const { randomUUID } = require('crypto');

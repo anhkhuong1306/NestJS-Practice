@@ -1,4 +1,8 @@
+import { ApiProperty } from "@nestjs/swagger";
+
 export class RefreshTokenDTO {
-    readonly deviceId: string;
+    @ApiProperty()
+    readonly deviceId?: string;
+    @ApiProperty()
     readonly refreshToken: string;
 }

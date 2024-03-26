@@ -6,10 +6,10 @@ import { JwtModule } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { DeviceModule } from "src/device/device.module";
 import { AuthGuard } from "./guard/auth.guard";
+import { LoggerModule } from "src/logger/logger.module";
 
 @Module({
     imports: [
-        DeviceModule,
         forwardRef(() => UserModule),
         JwtModule.registerAsync({
             useFactory: (config: ConfigService) => {
@@ -22,6 +22,8 @@ import { AuthGuard } from "./guard/auth.guard";
             },
             inject: [ConfigService],
         }),
+        DeviceModule,
+        LoggerModule,
     ],
     providers: [AuthService],
     controllers: [AuthController],

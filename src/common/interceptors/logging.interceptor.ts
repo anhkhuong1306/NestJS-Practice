@@ -1,11 +1,15 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable, tap } from 'rxjs';
-import { ApiName } from 'src/decorators/api-name.decorator';
+import { ApiName } from 'src/common/decorators/api-name.decorator';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
-    constructor(private reflector: Reflector) {}
+    constructor(
+        private reflector: Reflector,
+        private logger: LoggerService
+    ) {}
 
     intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> | Promise<Observable<any>> {
         const ctx = context.switchToHttp();
@@ -15,10 +19,13 @@ export class LoggingInterceptor implements NestInterceptor {
         const className = context.getClass().name;
 
         const apiName = this.reflector.get<string>(ApiName, context.getHandler());
-        console.log(`${className}::${methodNam}: API ${apiName} START`);
+        this.logger.info(`API ${apiName} [[START]]`, `${className}::${methodNam}`);
 
         return next.handle().pipe(
-            tap((x) => console.log(`${className}::${methodNam}: API ${apiName} END`))
+            tap({
+                complete: () => this.logger.info(`API ${apiName} [[END]]`, `${className}::${methodNam}`),
+                error: (error) => this.logger.error(`API ${apiName} [[ERROR]]`, `${className}::${methodNam}`, error),
+            })
         );
     }
 }
