@@ -15,6 +15,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthMiddleware } from './auth/auth.middleware';
 import { UserController } from './user/user.controller';
 import { LoggerModule } from './logger/logger.module';
+import { WebsocketModule } from './gateways/websockets.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { LoggerModule } from './logger/logger.module';
     UserModule,
     AuthModule,
     DeviceModule,
+    WebsocketModule,
   ],
   controllers: [AppController],
   providers: [AppService],

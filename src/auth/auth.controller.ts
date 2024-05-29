@@ -19,10 +19,10 @@ export class AuthController {
     @ApiName('Login')
     @UsePipes(new ValidationPipe())
     @Post('login')
-    async signIn(@Req() req, @Headers() headers: Headers, @Body() signInDto: LoginUserDTO) {
+    async signIn(@Req() req, @Body() signInDto: LoginUserDTO) {
         const fingerprint = req.fingerprint;
         const ipAddress = req.connection.remoteAddress;
-        const ua = headers['user-agent'];
+        const ua = req.headers['user-agent'];
         const deviceId = fingerprint.hash;
         const metaData: LoginMetaData = { ipAddress, ua, deviceId };
         return await this.authService.signIn(signInDto, metaData);
